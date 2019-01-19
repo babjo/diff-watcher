@@ -13,10 +13,12 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile 'com.github.kittinunf.fuel:fuel:1.15.1'
     compile 'org.mock-server:mockserver-netty:5.5.1'
+    compile 'io.github.java-diff-utils:java-diff-utils:4.0'
 
     testCompile "org.junit.jupiter:junit-jupiter-api:5.3.2"
     testCompile "org.junit.jupiter:junit-jupiter-params:5.3.2"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.3.2"
+    testCompile "io.mockk:mockk:1.9"
 }
 
 compileKotlin {
