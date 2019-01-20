@@ -1,7 +1,3 @@
-import DiffWatcher
-import Notifier
-import TargetGetter
-import TextDiffer
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.SpyK

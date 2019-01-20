@@ -1,4 +1,3 @@
-import LineNotifier
 import org.junit.jupiter.api.Test
 
 class NotifierTest {
