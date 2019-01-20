@@ -1,3 +1,5 @@
+import HtmlPageGetter
+
 class TargetGetterTest {
 
     // @Test

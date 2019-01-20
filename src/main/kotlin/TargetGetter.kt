@@ -8,24 +8,21 @@ interface TargetGetter {
 
 class HtmlPageGetter(private val url: String) : TargetGetter {
 
-    private var driver: ChromeDriver
-
     init {
         val os = when (System.getProperty("os.name")) {
             "Mac OS X" -> "mac"
             else -> "linux"
         }
-
         System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver_$os")
-        driver = ChromeDriver(ChromeOptions().apply { setHeadless(true) })
     }
 
     override fun get(): String =
-        driver.get(url)
+        ChromeDriver(ChromeOptions().apply { setHeadless(true) })
+            .also { it.get(url) }
             .let {
-                val page = driver.pageSource
-                driver.close()
-                driver.quit()
+                val page = it.pageSource
+                it.close()
+                it.quit()
                 page
             }
 }

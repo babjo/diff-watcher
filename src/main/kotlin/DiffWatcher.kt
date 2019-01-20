@@ -1,7 +1,6 @@
-import com.github.difflib.DiffUtils
-
 class DiffWatcher(
     private val targetGetter: TargetGetter,
+    private val differ: Differ,
     private val notifier: Notifier
 ) {
     var last: String = targetGetter.get()
@@ -18,10 +17,7 @@ class DiffWatcher(
     }
 
     private fun getDiff(current: String): String? =
-        DiffUtils
-            .diff(last.split("\n"), current.split("\n"))
-            .deltas
-            .ifEmpty { return null }
-            .joinToString { it.toString() }
-            .also { last = current }
+        differ
+            .findDiff(last, current)
+            ?.also { last = current }
 }
