@@ -16,13 +16,18 @@ class Cil : CliktCommand() {
 
     override fun run() {
         val cls = Class.forName(differClass)
+        val notifier = LineNotifier(token)
+
         val diffWatcher = DiffWatcher(
             HtmlPageGetter(url),
             cls.getDeclaredConstructor().newInstance() as Differ,
-            LineNotifier(token)
+            notifier
         )
+
         Timer().scheduleAtFixedRate(delay, period) {
-            diffWatcher.watchOnce()
+            diffWatcher.watchOnce().doOnError {
+                notifier.notify("Raised an exception: $it")
+            }
         }
     }
 }

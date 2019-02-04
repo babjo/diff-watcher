@@ -18,6 +18,7 @@ dependencies {
     compile 'ch.qos.logback:logback-classic:1.2.3'
     compile 'org.seleniumhq.selenium:selenium-java:3.141.59'
     compile 'com.github.ajalt:clikt:1.6.0'
+    compile 'io.reactivex.rxjava2:rxkotlin:2.3.0'
 
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.2'
     testCompile 'org.junit.jupiter:junit-jupiter-params:5.3.2'

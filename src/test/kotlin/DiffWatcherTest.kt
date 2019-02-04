@@ -3,6 +3,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.SpyK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
+import io.reactivex.Single.just
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -18,43 +20,48 @@ class DiffWatcherTest {
     @SpyK
     var differ = TextDiffer()
 
+    private lateinit var sut: DiffWatcher
+
+    @BeforeEach
+    fun setUp() {
+        sut = DiffWatcher(targetGetter, differ, notifier)
+    }
+
     @Test
     fun `should set the last, when starting to watch`() {
         // WHEN
-        every { targetGetter.get() } returns "Hi"
+        every { targetGetter.get() } returns just("Hi")
 
-        // GIVEN
-        val sut = DiffWatcher(targetGetter, differ, notifier)
+        // WHEN
+        sut.watchOnce().blockingGet()
 
         // THEN
-        assert(sut.last == "Hi")
+        assert(sut.last.get() == "Hi")
     }
 
     @Test
     fun `should not notify, when there is no diff between current target and last target`() {
         // GIVEN
-        every { targetGetter.get() } returnsMany listOf("Hi", "Hi")
-        val sut = DiffWatcher(targetGetter, differ, notifier)
+        every { targetGetter.get() } returnsMany listOf("Hi", "Hi").map { just(it) }
 
         // WHEN
-        sut.watchOnce()
+        repeat(2) { sut.watchOnce().blockingGet() }
 
         // THEN
         verify(exactly = 0) { notifier.notify(any()) }
-        assert(sut.last == "Hi")
+        assert(sut.last.get() == "Hi")
     }
 
     @Test
     fun `should notify diff message, when there is a diff between current target and last target`() {
         // GIVEN
-        every { targetGetter.get() } returnsMany listOf("Hi", "Hello")
-        val sut = DiffWatcher(targetGetter, differ, notifier)
+        every { targetGetter.get() } returnsMany listOf("Hi", "Hello").map { just(it) }
 
         // WHEN
-        sut.watchOnce()
+        repeat(2) { sut.watchOnce().blockingGet() }
 
         // THEN
         verify { notifier.notify(any()) }
-        assert(sut.last == "Hello")
+        assert(sut.last.get() == "Hello")
     }
 }
