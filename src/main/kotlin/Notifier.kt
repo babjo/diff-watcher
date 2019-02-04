@@ -1,13 +1,12 @@
-import mu.KotlinLogging
+import io.reactivex.Completable
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.IOException
 
 
 @FunctionalInterface
 interface Notifier {
-    fun notify(message: String)
+    fun notify(message: String): Completable
 }
 
 class LineNotifier(
@@ -15,24 +14,20 @@ class LineNotifier(
     private val client: OkHttpClient = OkHttpClient()
 ) : Notifier {
 
-    private val logger = KotlinLogging.logger {}
-
-    override fun notify(message: String) {
-        val requestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("message", message)
-            .build()
-
-        val request = Request.Builder()
-            .addHeader("Authorization", "Bearer $token")
-            .url("https://notify-api.line.me/api/notify")
-            .post(requestBody)
-            .build()
-
-        try {
-            client.newCall(request).execute()
-        } catch (e: IOException) {
-            logger.error { "Failed to notify: error=$e" }
-        }
-    }
+    override fun notify(message: String) =
+        Completable.fromCallable {
+            client.newCall(
+                Request
+                    .Builder()
+                    .addHeader("Authorization", "Bearer $token")
+                    .url("https://notify-api.line.me/api/notify")
+                    .post(
+                        MultipartBody.Builder()
+                            .setType(MultipartBody.FORM)
+                            .addFormDataPart("message", message)
+                            .build()
+                    )
+                    .build()
+            ).execute()
+        }!!
 }
